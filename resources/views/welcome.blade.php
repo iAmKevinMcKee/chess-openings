@@ -109,7 +109,7 @@
 <div class="relative flex items-center justify-center min-h-screen bg-gray-100 sm:items-center py-4 sm:pt-0">
     <div
         x-data="{ pieces: {
-        11: 'white-rook',
+        54: 'white-rook',
         21: 'white-knight',
         31: 'white-bishop',
         41: 'white-queen',
@@ -132,7 +132,7 @@
         58: 'black-king',
         68: 'black-bishop',
         78: 'black-knight',
-        88: 'black-rook',
+        65: 'black-rook',
         17: 'black-pawn',
         23: 'black-pawn',
         37: 'black-pawn',
@@ -189,9 +189,105 @@
             $refs[move].classList.add('possible')
         })
     },
+    setRookRightMoves(square, pieceColor) {
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        let stop = false;
+        while(!stop) {
+            possibleFile++;
+            if(possibleFile > 8) {
+                stop = true;
+                break;
+            }
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setRookLeftMoves(square, pieceColor) {
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        let stop = false;
+        while(!stop) {
+            possibleFile--;
+            if(possibleFile < 1) {
+                stop = true;
+                break;
+            }
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setRookUpMoves(square, pieceColor) {
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        let stop = false;
+        while(!stop) {
+            possibleRank++;
+            if(possibleRank > 8) {
+                stop = true;
+                break;
+            }
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setRookDownMoves(square, pieceColor) {
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        let stop = false;
+        while(!stop) {
+            possibleRank--;
+            if(possibleRank < 1) {
+                stop = true;
+                break;
+            }
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
     setPossibleMoves(square, piece) {
         let file = parseInt(square.charAt(0));
         let rank = parseInt(square.charAt(1));
+        if (piece == 'white-rook') {
+            this.setRookRightMoves(square, this.getPieceColor(piece))
+            this.setRookLeftMoves(square, this.getPieceColor(piece))
+            this.setRookUpMoves(square, this.getPieceColor(piece))
+            this.setRookDownMoves(square, this.getPieceColor(piece))
+        }
+        if (piece == 'black-rook') {
+            this.setRookRightMoves(square, this.getPieceColor(piece))
+            this.setRookLeftMoves(square, this.getPieceColor(piece))
+            this.setRookUpMoves(square, this.getPieceColor(piece))
+            this.setRookDownMoves(square, this.getPieceColor(piece))
+        }
         if (piece == 'black-bishop') {
             let stop = false;
             let possibleFile = file;
