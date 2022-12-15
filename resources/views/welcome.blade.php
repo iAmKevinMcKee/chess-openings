@@ -146,6 +146,7 @@
     allPieces: ['white-rook', 'white-knight', 'white-bishop', 'white-king', 'white-queen', 'white-pawn', 'black-rook', 'black-knight', 'black-bishop', 'black-king', 'black-queen', 'black-pawn'],
     selectedSquare: null,
     selectedPiece: null,
+    selectedPieceSquare: null,
 
     isValidSquare(square) {
         if(square.includes('-')) {
@@ -165,7 +166,7 @@
         if (rank < 1 || rank > 8) {
             return false;
         }
-        console.log(square);
+
         return true;
     },
     squareContainsPiece(square) {
@@ -176,9 +177,33 @@
         return false;
     },
     getPieceColor(piece) {
-        return piece.slice(0, 5);
+        if (piece.includes('white')) {
+            return 'white';
+        }
+
+        if (piece.includes('black')) {
+            return 'black';
+        }
+
+        return null;
     },
     updateBoard(pieces) {
+        let squares = document.querySelectorAll('#chess-board > div > div');
+        squares.forEach((square) => {
+            square.classList.remove('possible');
+            square.classList.remove('white-king');
+            square.classList.remove('white-queen');
+            square.classList.remove('white-rook');
+            square.classList.remove('white-bishop');
+            square.classList.remove('white-knight');
+            square.classList.remove('white-pawn');
+            square.classList.remove('black-king');
+            square.classList.remove('black-queen');
+            square.classList.remove('black-rook');
+            square.classList.remove('black-bishop');
+            square.classList.remove('black-knight');
+            square.classList.remove('black-pawn');
+        });
         for (const [key, value] of Object.entries(pieces)) {
             $refs[key].classList.remove('white-king', 'white-queen', 'white-rook', 'white-bishop', 'white-knight', 'white-pawn',
                 'black-king', 'black-queen', 'black-rook', 'black-bishop', 'black-knight', 'black-pawn');
@@ -188,6 +213,94 @@
         this.possibleMoves.forEach(function (move) {
             $refs[move].classList.add('possible')
         })
+    },
+    setBishopNwMoves(square, pieceColor) {
+        let stop = false;
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        while(!stop) {
+            possibleFile++; possibleRank++;
+            if(possibleFile > 8 || possibleRank > 8) {
+                stop = true;
+                break;
+            }
+            console.log(possibleFile, possibleRank);
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setBishopNeMoves(square, pieceColor) {
+        let stop = false;
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        while(!stop) {
+            possibleFile--; possibleRank++;
+            if(possibleFile < 1 || possibleRank > 8) {
+                stop = true;
+                break;
+            }
+            console.log(possibleFile, possibleRank);
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setBishopSwMoves(square, pieceColor) {
+        let stop = false;
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        while(!stop) {
+            possibleFile++; possibleRank--;
+            if(possibleFile > 8 || possibleRank < 1) {
+                stop = true;
+                break;
+            }
+            console.log(possibleFile, possibleRank);
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
+    },
+    setBishopSeMoves(square, pieceColor) {
+        let stop = false;
+        let possibleFile = parseInt(square.charAt(0));
+        let possibleRank = parseInt(square.charAt(1));
+        while(!stop) {
+            possibleFile--; possibleRank--;
+            if(possibleFile < 1 || possibleRank < 1) {
+                stop = true;
+                break;
+            }
+            console.log(possibleFile, possibleRank);
+
+            if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
+                if(this.getPieceColor(attackedPiece) !== pieceColor) {
+                    this.possibleMoves.push(possibleFile + '' + possibleRank);
+                }
+                stop = true;
+            } else {
+                this.possibleMoves.push(possibleFile + '' + possibleRank);
+            }
+        }
     },
     setRookRightMoves(square, pieceColor) {
         let possibleFile = parseInt(square.charAt(0));
@@ -276,188 +389,49 @@
     setPossibleMoves(square, piece) {
         let file = parseInt(square.charAt(0));
         let rank = parseInt(square.charAt(1));
+        if(piece == 'white-queen') {
+            this.setRookRightMoves(square, 'white');
+            this.setRookLeftMoves(square, 'white');
+            this.setRookUpMoves(square, 'white');
+            this.setRookDownMoves(square, 'white');
+            this.setBishopNeMoves(square, 'white');
+            this.setBishopNwMoves(square, 'white');
+            this.setBishopSeMoves(square, 'white');
+            this.setBishopSwMoves(square, 'white');
+        }
+        if(piece == 'black-queen') {
+            this.setRookRightMoves(square, 'black');
+            this.setRookLeftMoves(square, 'black');
+            this.setRookUpMoves(square, 'black');
+            this.setRookDownMoves(square, 'black');
+            this.setBishopNeMoves(square, 'black');
+            this.setBishopNwMoves(square, 'black');
+            this.setBishopSeMoves(square, 'black');
+            this.setBishopSwMoves(square, 'black');
+        }
         if (piece == 'white-rook') {
-            this.setRookRightMoves(square, this.getPieceColor(piece))
-            this.setRookLeftMoves(square, this.getPieceColor(piece))
-            this.setRookUpMoves(square, this.getPieceColor(piece))
-            this.setRookDownMoves(square, this.getPieceColor(piece))
+            this.setRookRightMoves(square, 'white')
+            this.setRookLeftMoves(square, 'white')
+            this.setRookUpMoves(square, 'white')
+            this.setRookDownMoves(square, 'white')
         }
         if (piece == 'black-rook') {
-            this.setRookRightMoves(square, this.getPieceColor(piece))
-            this.setRookLeftMoves(square, this.getPieceColor(piece))
-            this.setRookUpMoves(square, this.getPieceColor(piece))
-            this.setRookDownMoves(square, this.getPieceColor(piece))
+            this.setRookRightMoves(square, 'black')
+            this.setRookLeftMoves(square, 'black')
+            this.setRookUpMoves(square, 'black')
+            this.setRookDownMoves(square, 'black')
         }
         if (piece == 'black-bishop') {
-            let stop = false;
-            let possibleFile = file;
-            let possibleRank = rank;
-            while(!stop) {
-                possibleFile++; possibleRank++;
-                if(possibleFile > 8 || possibleRank > 8) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'white') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile++; possibleRank--;
-                if(possibleFile > 8 || possibleRank < 1) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'white') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile--; possibleRank--;
-                if(possibleFile < 1 || possibleRank < 1) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'white') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile--; possibleRank++;
-                if(possibleFile < 1 || possibleRank > 8) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'white') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
+            this.setBishopNeMoves(square, 'black')
+            this.setBishopNwMoves(square, 'black')
+            this.setBishopSeMoves(square, 'black')
+            this.setBishopSwMoves(square, 'black')
         }
         if (piece == 'white-bishop') {
-            let stop = false;
-            let possibleFile = file;
-            let possibleRank = rank;
-            while(!stop) {
-                possibleFile++; possibleRank++;
-                if(possibleFile > 8 || possibleRank > 8) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'black') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile++; possibleRank--;
-                if(possibleFile > 8 || possibleRank < 1) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'black') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile--; possibleRank--;
-                if(possibleFile < 1 || possibleRank < 1) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'black') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
-            console.log('left-up');
-            stop = false;
-            possibleFile = file;
-            possibleRank = rank;
-            while(!stop) {
-                possibleFile--; possibleRank++;
-                if(possibleFile < 1 || possibleRank > 8) {
-                    stop = true;
-                    break;
-                }
-                console.log(possibleFile, possibleRank);
-
-                if(attackedPiece = this.squareContainsPiece(possibleFile + '' + possibleRank)) {
-                    if(this.getPieceColor(attackedPiece) == 'black') {
-                        this.possibleMoves.push(possibleFile + '' + possibleRank);
-                    }
-                    stop = true;
-                    break;
-                } else {
-                    this.possibleMoves.push(possibleFile + '' + possibleRank);
-                }
-            }
+            this.setBishopNeMoves(square, 'white')
+            this.setBishopNwMoves(square, 'white')
+            this.setBishopSeMoves(square, 'white')
+            this.setBishopSwMoves(square, 'white')
         }
         if (piece == 'white-knight') {
             let squares = [
@@ -475,6 +449,10 @@
                 if (! this.isValidSquare(square)) {
                     return false;
                 }
+                console.log('hiiiiiii');
+                console.log(square);
+                console.log(this.squareContainsPiece(square));
+
                 return this.squareContainsPiece(square) == false || (this.getPieceColor(this.squareContainsPiece(square)) == 'black');
             });
 
@@ -551,6 +529,45 @@
                 }
             }
         }
+        if (piece == 'white-king') {
+            let squares = [
+                (file + 1) + '' + (rank + 1),
+                (file + 1) + '' + (rank),
+                (file + 1) + '' + (rank - 1),
+                (file) + '' + (rank + 1),
+                (file) + '' + (rank - 1),
+                (file - 1) + '' + (rank + 1),
+                (file - 1) + '' + (rank),
+                (file - 1) + '' + (rank - 1),
+            ];
+
+            this.possibleMoves = squares.filter((square) => {
+                if (! this.isValidSquare(square)) {
+                    return false;
+                }
+                console.log(this.squareContainsPiece(square));
+                return this.squareContainsPiece(square) == false || (this.getPieceColor(this.squareContainsPiece(square)) == 'black');
+            });
+        }
+        if(piece == 'black-king') {
+        let squares = [
+                (file + 1) + '' + (rank + 1),
+                (file + 1) + '' + (rank),
+                (file + 1) + '' + (rank - 1),
+                (file) + '' + (rank + 1),
+                (file) + '' + (rank - 1),
+                (file - 1) + '' + (rank + 1),
+                (file - 1) + '' + (rank),
+                (file - 1) + '' + (rank - 1),
+            ];
+
+            this.possibleMoves = squares.filter((square) => {
+                if (! this.isValidSquare(square)) {
+                    return false;
+                }
+                return this.squareContainsPiece(square) == false || (this.getPieceColor(this.squareContainsPiece(square)) == 'white');
+            });
+        }
     }
 
         }"
@@ -561,24 +578,46 @@
             });
         "
         x-on:click="
+        console.log(pieces);
             selectedSquare = $event.target.getAttribute('x-ref');
-            selectedPiece = pieces[selectedSquare];
-            possibleDivs = document.getElementsByClassName('possible');
-            while(possibleDivs[0]) {
-                possibleDivs[0].classList.remove('possible');
-            }
-            possibleMoves = [];
+            if(selectedPiece == null && squareContainsPiece(selectedSquare)) {
+                selectedPiece = pieces[selectedSquare];
+                selectedPieceSquare = selectedSquare;
+                possibleDivs = document.getElementsByClassName('possible');
+                while(possibleDivs[0]) {
+                    possibleDivs[0].classList.remove('possible');
+                }
+                possibleMoves = [];
 
-            setPossibleMoves(selectedSquare, selectedPiece);
+                setPossibleMoves(selectedSquare, selectedPiece);
+            } else if(selectedPiece == null & ! squareContainsPiece(selectedSquare)) {
+             selectedPieceSquare = null;
+             } else {
+{{--            there is a selected piece and it is moved--}}
+                if(possibleMoves.includes(selectedSquare)) {
+                    pieces[selectedSquare] = selectedPiece;
+                    console.log(selectedPieceSquare);
+                    delete pieces[selectedPieceSquare];
+                    selectedPiece = null;
+                    selectedSquare = null;
+                } else {
+                    selectedPiece = null;
+                    selectedSquare = null;
+                }
+                possibleDivs = document.getElementsByClassName('possible');
+                while(possibleDivs[0]) {
+                    possibleDivs[0].classList.remove('possible');
+                }
+                possibleMoves = [];
+            }
             updateBoard(pieces);
 
         "
         class="w-[640px] h-[640px]">
-        <div x-on:click="pieces = {17: 'white-bishop', 32: 'white-king'}">change</div>
         <div x-text="selectedSquare"></div>
         <div x-text="selectedPiece"></div>
         <div x-text="JSON.stringify(possibleMoves)"></div>
-        <div x-ref="board">
+        <div x-ref="board" id="chess-board">
 
             <div class="grid grid-cols-8 h-[80px] w-full">
                 <div x-ref="18" class="bg-gray-300 odd:bg-white border border-gray-800"></div>
